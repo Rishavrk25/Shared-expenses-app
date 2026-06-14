@@ -234,7 +234,7 @@ export default function GroupDetails() {
             <p className="text-gray-400 text-sm">No balances yet</p>
           ) : (
             <div className="space-y-2">
-              {balances.map((b) => <BalanceCard key={b.userId} balance={b} />)}
+              {balances.map((b) => <BalanceCard key={b.userId} balance={b} groupId={id} />)}
             </div>
           )}
         </div>

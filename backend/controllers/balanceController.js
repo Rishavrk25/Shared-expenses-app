@@ -174,3 +174,55 @@ export const getUserBalanceBreakdown = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+// GET /api/balances/summary
+export const getUserBalanceSummary = async (req, res) => {
+    try {
+        const userId = req.userId;
+        
+        // Find all groups the user belongs to
+        const groupsResult = await pool.query(
+            "SELECT group_id FROM group_members WHERE user_id = $1",
+            [userId]
+        );
+        
+        let totalOwed = 0;
+        let totalOwes = 0;
+        const groupBalances = [];
+        
+        for (const row of groupsResult.rows) {
+            const groupId = row.group_id;
+            const balances = await computeBalances(groupId);
+            const userBalance = balances[userId] || 0;
+            
+            if (userBalance > 0.01) {
+                totalOwed += userBalance;
+            } else if (userBalance < -0.01) {
+                totalOwes += Math.abs(userBalance);
+            }
+            
+            // Get group name
+            const groupRes = await pool.query("SELECT name FROM groups WHERE id = $1", [groupId]);
+            const groupName = groupRes.rows[0]?.name || `Group ${groupId}`;
+            
+            if (Math.abs(userBalance) > 0.01) {
+                groupBalances.push({
+                    groupId,
+                    groupName,
+                    balance: Number(userBalance.toFixed(2))
+                });
+            }
+        }
+        
+        res.json({
+            totalOwed: Number(totalOwed.toFixed(2)),
+            totalOwes: Number(totalOwes.toFixed(2)),
+            netBalance: Number((totalOwed - totalOwes).toFixed(2)),
+            groupBalances
+        });
+        
+    } catch (err) {
+        console.error("Get user balance summary error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

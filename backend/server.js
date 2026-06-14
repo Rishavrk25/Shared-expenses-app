@@ -19,6 +19,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/groups", balanceRoutes);
+app.use("/api/balances", balanceRoutes);
 app.use("/api/settlements", settlementRoutes);
 app.use("/api/import", importRoutes);
 
