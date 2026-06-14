@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Wallet } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 
 export default function Register() {
@@ -32,7 +33,12 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-96">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">💰 SplitWise</h1>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="bg-green-600 p-2 rounded-xl text-white shadow-sm">
+              <Wallet className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 tracking-tight">SplitWise</h1>
+          </div>
           <p className="text-sm text-gray-500 mt-1">Create your account</p>
         </div>
 

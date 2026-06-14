@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import auth from "../middleware/auth.js";
 import {
+    getUserImports,
     uploadAndProcess,
     getImportJob,
     getImportAnomalies,
@@ -41,6 +42,9 @@ const router = express.Router();
 
 // All import routes are protected by auth middleware
 router.use(auth);
+
+// GET /api/import
+router.get("/", getUserImports);
 
 // POST /api/import
 router.post("/", upload.single("file"), uploadAndProcess);

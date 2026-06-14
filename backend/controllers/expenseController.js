@@ -113,3 +113,24 @@ export const getGroupExpenses = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+// GET /api/expenses
+export const getUserExpenses = async (req, res) => {
+    try {
+        const userId = req.userId;
+        
+        const result = await pool.query(
+            `SELECT DISTINCT e.id, e.title, e.amount, e.currency, e.expense_date, e.created_at, e.paid_by
+             FROM expenses e
+             LEFT JOIN expense_participants ep ON e.id = ep.expense_id
+             WHERE e.paid_by = $1 OR ep.user_id = $1
+             ORDER BY e.expense_date DESC`,
+             [userId]
+        );
+        
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Get user expenses error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

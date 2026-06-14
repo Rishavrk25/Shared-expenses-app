@@ -3,6 +3,8 @@ import auth from "../middleware/auth.js";
 import {
     createGroup,
     getUserGroups,
+    getGroupById,
+    getGroupMembers,
     addMember,
     removeMember,
 } from "../controllers/groupController.js";
@@ -20,8 +22,14 @@ router.post("/", createGroup);
 // GET    /api/groups
 router.get("/", getUserGroups);
 
+// GET    /api/groups/:groupId
+router.get("/:groupId", getGroupById);
+
 // POST   /api/groups/:groupId/members
 router.post("/:groupId/members", addMember);
+
+// GET    /api/groups/:groupId/members
+router.get("/:groupId/members", getGroupMembers);
 
 // DELETE /api/groups/:groupId/members/:userId
 router.delete("/:groupId/members/:userId", removeMember);

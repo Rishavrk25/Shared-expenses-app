@@ -3,6 +3,21 @@ import { parseCSV, mapRow } from "../services/csvParserService.js";
 import { normalizeRow } from "../services/validationService.js";
 import { detectAnomalies, buildDetectionContext, storeAnomalies, getAnomalies } from "../services/anomalyService.js";
 
+// GET /api/import
+export const getUserImports = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const result = await pool.query(
+            "SELECT * FROM import_jobs WHERE uploaded_by = $1 ORDER BY uploaded_at DESC",
+            [userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Get user imports error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 // POST /api/import
 export const uploadAndProcess = async (req, res) => {
     try {

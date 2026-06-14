@@ -6,13 +6,23 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Dashboard() {
   const [groups, setGroups] = useState([]);
+  const [imports, setImports] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    API.get("/groups")
-      .then((res) => setGroups(res.data || []))
-      .catch((err) => setError(err.response?.data?.error || "Failed to load data"))
+    Promise.all([
+      API.get("/groups").catch(() => ({ data: [] })),
+      API.get("/import").catch(() => ({ data: [] })),
+      API.get("/expenses").catch(() => ({ data: [] }))
+    ])
+      .then(([groupsRes, importsRes, expensesRes]) => {
+        setGroups(groupsRes.data || []);
+        setImports(importsRes.data || []);
+        setExpenses(expensesRes.data || []);
+      })
+      .catch((err) => setError("Failed to load data"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -30,12 +40,12 @@ export default function Dashboard() {
           <p className="text-3xl font-bold text-blue-600">{groups.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <p className="text-sm text-gray-500 mb-1">Recent Expenses</p>
-          <p className="text-3xl font-bold text-purple-600">—</p>
+          <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
+          <p className="text-3xl font-bold text-purple-600">{expenses.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <p className="text-sm text-gray-500 mb-1">Import Reports</p>
-          <p className="text-3xl font-bold text-orange-600">—</p>
+          <p className="text-3xl font-bold text-orange-600">{imports.length}</p>
         </div>
       </div>
 

@@ -65,6 +65,46 @@ export const getUserGroups = async (req, res) => {
     }
 };
 
+// GET /api/groups/:groupId
+export const getGroupById = async (req, res) => {
+    try {
+        const { groupId } = req.params;
+        const result = await pool.query(
+            `SELECT g.id, g.name, g.created_at, u.name AS created_by_name
+             FROM groups g
+             JOIN users u ON g.created_by = u.id
+             WHERE g.id = $1`,
+            [groupId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Group not found" });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("Get group error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// GET /api/groups/:groupId/members
+export const getGroupMembers = async (req, res) => {
+    try {
+        const { groupId } = req.params;
+        const result = await pool.query(
+            `SELECT gm.user_id, u.name, u.email
+             FROM group_members gm
+             JOIN users u ON gm.user_id = u.id
+             WHERE gm.group_id = $1
+             ORDER BY u.name`,
+            [groupId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Get group members error:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 // POST /api/groups/:groupId/members
 export const addMember = async (req, res) => {
     const client = await pool.connect();

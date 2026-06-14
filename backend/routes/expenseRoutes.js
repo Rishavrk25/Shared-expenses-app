@@ -1,11 +1,14 @@
 import express from "express";
 import auth from "../middleware/auth.js";
-import { createExpense, getGroupExpenses } from "../controllers/expenseController.js";
+import { createExpense, getGroupExpenses, getUserExpenses } from "../controllers/expenseController.js";
 
 const router = express.Router();
 
 // All expense routes are protected by auth middleware
 router.use(auth);
+
+// GET /api/expenses (all expenses for user)
+router.get("/", getUserExpenses);
 
 // POST /api/expenses
 router.post("/", createExpense);
