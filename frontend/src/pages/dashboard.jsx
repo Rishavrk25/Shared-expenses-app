@@ -7,15 +7,17 @@ import LoadingSpinner from "../components/LoadingSpinner";
 export default function Dashboard() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     API.get("/groups")
-      .then((res) => setGroups(res.data))
-      .catch(() => {})
+      .then((res) => setGroups(res.data || []))
+      .catch((err) => setError(err.response?.data?.error || "Failed to load data"))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <MainLayout><LoadingSpinner /></MainLayout>;
+  if (error) return <MainLayout><div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div></MainLayout>;
 
   return (
     <MainLayout>
