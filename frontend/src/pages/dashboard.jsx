@@ -1,15 +1,64 @@
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import API from "../services/api";
+import MainLayout from "../layouts/MainLayout";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-export function Dashboard() {
+export default function Dashboard() {
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    API.get("/groups")
+      .then((res) => setGroups(res.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <MainLayout><LoadingSpinner /></MainLayout>;
+
   return (
-    <>
-      <SignedIn>
-        <h1>Dashboard</h1>
-      </SignedIn>
+    <MainLayout>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h2>
 
-      <SignedOut>
-        <h1>Please Login</h1>
-      </SignedOut>
-    </>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <p className="text-sm text-gray-500 mb-1">Total Groups</p>
+          <p className="text-3xl font-bold text-blue-600">{groups.length}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <p className="text-sm text-gray-500 mb-1">Recent Expenses</p>
+          <p className="text-3xl font-bold text-purple-600">—</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <p className="text-sm text-gray-500 mb-1">Import Reports</p>
+          <p className="text-3xl font-bold text-orange-600">—</p>
+        </div>
+      </div>
+
+      {/* Recent Groups */}
+      <h3 className="text-lg font-semibold text-gray-800 mb-3">Recent Groups</h3>
+      {groups.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+          <p className="text-gray-400 mb-3">No groups yet</p>
+          <Link to="/groups" className="text-blue-600 font-medium hover:underline">Create your first group →</Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {groups.slice(0, 6).map((g) => (
+            <Link key={g.id} to={`/groups/${g.id}`}
+              className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow block">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold">
+                  {g.name?.charAt(0).toUpperCase()}
+                </div>
+                <span className="font-medium text-gray-800">{g.name}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </MainLayout>
   );
 }

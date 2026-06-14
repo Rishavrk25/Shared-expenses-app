@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -11,8 +12,18 @@
   "description": "",
   "dependencies": {
     "@clerk/express": "^2.1.26",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "csv-parser": "^3.2.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.0",
+    "multer": "^2.1.1",
+    "pg": "^8.21.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
